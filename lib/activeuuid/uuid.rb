@@ -41,7 +41,7 @@ module UUIDTools
     end
 
     def bytesize
-      16
+      32
     end
 
   private
