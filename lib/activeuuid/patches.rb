@@ -39,7 +39,7 @@ module ActiveUUID
       def uuid(*column_names)
         options = column_names.extract_options!
         column_names.each do |name|
-          type = ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql' ? 'uuid' : 'binary(16)'
+          type = ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql' ? 'uuid' : 'binary(32)'
           column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
         end
       end
@@ -60,7 +60,7 @@ module ActiveUUID
         end
 
         def simplified_type_with_uuid(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+          return :uuid if field_type == 'binary(32)' || field_type == 'binary(32,0)'
           simplified_type_without_uuid(field_type)
         end
 
@@ -89,7 +89,7 @@ module ActiveUUID
         alias_method :original_simplified_type, :simplified_type
 
         def simplified_type(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+          return :uuid if field_type == 'binary(32)' || field_type == 'binary(32,0)'
           original_simplified_type(field_type)
         end
       end
@@ -130,7 +130,7 @@ module ActiveUUID
         end
 
         def native_database_types_with_uuid
-          @native_database_types ||= native_database_types_without_uuid.merge(uuid: { name: 'binary', limit: 16 })
+          @native_database_types ||= native_database_types_without_uuid.merge(uuid: { name: 'binary', limit: 32 })
         end
 
         alias_method_chain :quote, :visiting
@@ -171,7 +171,7 @@ module ActiveUUID
       included do
         def initialize_type_map_with_uuid(m)
           initialize_type_map_without_uuid(m)
-          register_class_with_limit m, /binary\(16(,0)?\)/i, ::ActiveRecord::Type::UUID
+          register_class_with_limit m, /binary\(32(,0)?\)/i, ::ActiveRecord::Type::UUID
         end
 
         alias_method_chain :initialize_type_map, :uuid
@@ -199,4 +199,3 @@ module ActiveUUID
     end
   end
 end
- 
